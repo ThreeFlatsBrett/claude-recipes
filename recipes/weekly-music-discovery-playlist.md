@@ -16,7 +16,7 @@ Fill in the `«placeholders»` with your own preferences, then paste the finishe
 
 ## Step 1 — Decide your preferences
 
-Work through these eight choices. Your answers become the placeholders in Step 2.
+Work through these choices. Your answers become the placeholders in Step 2.
 
 ### 1. Sources — where the picks come from
 
@@ -39,13 +39,13 @@ Pick any combination:
 
 > **`«NEW_DEFINITION»`** = _______________
 
-### 3. Playlist structure
+### 3. Playlist structure — not actually a choice
 
-- **One rolling playlist** — same list refreshed weekly, one link in rotation.
-- **New playlist each week** — dated, archived forever, you can revisit a good week.
-- **Rolling + monthly keepers** — weekly list, plus you promote what stuck to a monthly playlist.
+**A new playlist each week**, dated, so you can revisit a good week.
 
-> **`«STRUCTURE»`** = _______________
+This looks like it should be a decision, but the Spotify connector settles it for you: it can *create* playlists and nothing else. There's no tool to add tracks to a playlist that already exists, so a single rolling list that gets refreshed each week can't be automated — you'd be moving tracks by hand every Friday, which defeats the point.
+
+Check your own connector's tool list before taking this as permanent. If it ever gains an "add tracks to an existing playlist" action, a rolling playlist becomes viable and this section is worth revisiting.
 
 ### 4. Artists you already love
 
@@ -158,6 +158,8 @@ Before letting it run unattended, ask Claude to do one pass live. You'll find ou
 
 **Spotify's playlist tool takes a natural-language description, not specific track IDs.** You name the artist and album; Spotify picks the song. So the *records* are hand-curated but the *cuts* are not fully under your control. Naming the album explicitly and describing the kind of track you want gets close. If a track choice is wrong, ask for a swap.
 
+**The playlist lands private, and the connector can't change that.** The create tool makes playlists private to the account that owns them and exposes no visibility flag, so making one shareable is a manual step in the Spotify app — and with a new playlist every week, that's a manual step every week. What *can* be automated is delivery: the task can send the link to you or anyone else. It just can't make that link open for someone who isn't you. Test that before building anything on top of it.
+
 **Your connector may not be able to read back playlists it already built.** Check what the Spotify connector actually exposes — if there's no way to list existing playlists, an anti-repeat instruction phrased as "check my recent playlists" has no tool to run on and will quietly do nothing. That's why STEP 6 keeps the history in memory instead.
 
 ---
@@ -185,7 +187,7 @@ For reference, one filled-in configuration:
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
 - **Taste:** indie rock, alternative, Americana; chill and atmospheric
-- **Anchor artists:** Temple of the Dog, Wilco, U2
+- **Anchor artists:** The National, Big Thief, Fleet Foxes
 - **Timing:** Fridays 7am Central
 - **Name format:** `New Music — <Mon D, YYYY>` (e.g. `New Music — Sep 4, 2026`)
 - **Picks log:** appended to the same memory file the spec lives in, so STEP 6 has somewhere to write
