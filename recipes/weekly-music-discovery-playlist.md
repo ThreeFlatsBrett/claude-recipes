@@ -16,7 +16,7 @@ Fill in the `«placeholders»` with your own preferences, then paste the finishe
 
 ## Step 1 — Decide your preferences
 
-Work through these choices. Your answers become the placeholders in Step 2.
+Work through these choices. Your answers become the placeholders in Step 3.
 
 ### 1. Sources — where the picks come from
 
@@ -89,10 +89,41 @@ List genres to hard-exclude. Common ones: hyperpop / harsh electronic, hip-hop, 
 > **`«FAVORITE_ARTISTS»`** = 3–5 artists that anchor your taste _______________
 > **`«DAY_AND_TIME»`** = e.g. "Fridays at 7am Central" _______________
 > **`«PLAYLIST_NAME_FORMAT»`** = e.g. `New Music — <Mon D, YYYY>` _______________
+> **`«MEMORY_PATH»`** = where the spec lives, e.g. `/topics/music.md` _______________
 
 ---
 
-## Step 2 — The scheduled task prompt
+## Step 2 — Put your spec in memory
+
+The task prompt reads your spec from memory instead of restating it, so you can refine your taste in any chat without editing the scheduled task. Set this up first — ask Claude in a normal conversation, not the task:
+
+```text
+Save this to memory at «MEMORY_PATH», replacing whatever is there:
+
+# Music
+
+## Taste
+«YOUR_TASTE». Anchor artists: «FAVORITE_ARTISTS».
+
+## Hard exclusions
+«EXCLUSIONS»
+
+## Weekly playlist spec
+- «LENGTH». «PER_ARTIST».
+- "New" means: «NEW_DEFINITION».
+- Familiar artists: «FAMILIAR_ARTISTS».
+- Sources: «SOURCES».
+- Name: "«PLAYLIST_NAME_FORMAT»", that Friday's date.
+
+## Picks log
+(One line per week: date, then artist — album for each pick. The Friday task appends here.)
+```
+
+Then ask Claude to read it back. If the path is wrong or the file is empty, STEP 1 of the task gets nothing and the anti-repeat check can't work — and it fails silently.
+
+---
+
+## Step 3 — The scheduled task prompt
 
 Ask Claude to create a scheduled task at **`«DAY_AND_TIME»`** with this as the prompt. Every run starts a fresh session, so the prompt has to be fully self-contained.
 
@@ -146,7 +177,7 @@ Adjust STEP 5 to match your **`«APPROVAL»`** choice — if you picked "send th
 
 ---
 
-## Step 3 — Run a trial week first
+## Step 4 — Run a trial week first
 
 Before letting it run unattended, ask Claude to do one pass live. You'll find out immediately whether the curation matches your taste, and you can correct the spec while the reasoning is still in front of you. Calibrating on a real list beats guessing at the config.
 
@@ -162,7 +193,7 @@ Before letting it run unattended, ask Claude to do one pass live. You'll find ou
 
 ## Tips
 
-- **Store your spec in Claude's memory**, not just the task prompt. Then any Claude session knows your taste, and you can refine it conversationally ("stop giving me so much ambient") without editing the scheduled task.
+- **Refine the spec conversationally.** Because it lives in memory (Step 2), "stop giving me so much ambient" in any chat carries into the next run — no need to edit the task.
 - **Make the anti-repeat check write, not just read.** Each run starts fresh, so one that reads prior picks but never records its own has nothing to compare against next week. That's the STEP 1 / STEP 6 pair.
 - **Grade the first few weeks out loud.** "Track 4 was great, tracks 7 and 9 were noise" tunes the filter faster than any amount of upfront configuration.
 - **Watch for daylight saving.** Scheduled tasks run on a fixed UTC schedule, so a 7am task drifts to 6am (or 8am) when the clocks change. Ask Claude to shift it twice a year, or just live with the hour.
