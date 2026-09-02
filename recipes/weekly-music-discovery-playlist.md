@@ -39,6 +39,8 @@ Pick any combination:
 
 > **`«NEW_DEFINITION»`** = _______________
 
+Whichever you pick, exclude canonical radio staples. "New to you at any age" is meant to surface overlooked records, not the classic-rock canon — without that guard, a discovery playlist will hand you Pat Benatar, "Love Is a Battlefield".
+
 ### 3. Playlist structure — not actually a choice
 
 **A new playlist each week**, dated, so you can revisit a good week.
@@ -60,6 +62,8 @@ The connector can create playlists but not modify them, so a rolling list you re
 - **25–30 tracks (~2 hr)** — deep dig, skim for keepers.
 
 > **`«LENGTH»`** = _______________
+
+Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that.
 
 ### 6. Tracks per artist
 
@@ -107,6 +111,7 @@ Save this to memory at «MEMORY_PATH», replacing whatever is there:
 
 ## Hard exclusions
 «EXCLUSIONS»
+No canonical radio staples, however old.
 
 ## Weekly playlist spec
 - «LENGTH». «PER_ARTIST».
@@ -116,7 +121,9 @@ Save this to memory at «MEMORY_PATH», replacing whatever is there:
 - Name: "«PLAYLIST_NAME_FORMAT»", that Friday's date.
 
 ## Picks log
-(One line per week: date, then artist — album for each pick. The Friday task appends here.)
+(One line per week: date, then artist — track — album for each track that actually
+shipped. The Friday task appends here. Entries marked UNVERIFIED are intended picks
+that could not be confirmed.)
 ```
 
 Then ask Claude to read it back. If the path is wrong or the file is empty, STEP 1 of the task gets nothing and the anti-repeat check can't work — and it fails silently.
@@ -134,7 +141,7 @@ without asking anything — «YOUR_NAME» is not watching.
 STEP 1 — Read memory first. Check the stored music preferences file for taste
 and spec, and read the running picks log so you do not repeat artists or
 albums from the last 3-4 weeks. If no picks log exists yet, proceed — you will
-create it in STEP 6.
+create it in STEP 7.
 
 STEP 2 — Research (do this BEFORE touching any Spotify tool). Sources, in
 priority order:
@@ -149,31 +156,57 @@ Useful notes:
 - aquariumdrunkard.com — best source for Americana/folk/psych
 - albumoftheyear.org/releases/ — what actually dropped this week
 
-STEP 3 — Curate «LENGTH».
+STEP 3 — Curate «LENGTH». The lower bound is a hard floor, not a target.
 Taste: «YOUR_TASTE». Favorites include «FAVORITE_ARTISTS».
 "New" means: «NEW_DEFINITION». Do not pad with weak current releases just
 because they are current.
+Old records qualify only if they genuinely surfaced in this week's press.
+Exclude canonical radio staples regardless of age — the point is discovery,
+not the classic-rock canon. A staple that slipped through once: Pat Benatar, "Love Is a Battlefield".
 Tracks per artist: «PER_ARTIST».
 Artists already in rotation: «FAMILIAR_ARTISTS».
 HARD EXCLUSIONS: «EXCLUSIONS».
 
-STEP 4 — Build it. Use the Spotify search tool to confirm each album exists
-on Spotify, then the create-playlist tool. IMPORTANT: the create tool takes a
-natural-language prompt, not track IDs — so name every artist and album
-explicitly in that prompt and specify what kind of track to pull from each
-(e.g. "the strongest atmospheric cut"). Name the playlist exactly
-"«PLAYLIST_NAME_FORMAT»" using this week's date.
+STEP 4 — Build it. Use the Spotify search tool to confirm every pick exists on
+Spotify first. If a pick cannot be confirmed, replace it with another
+researched pick — never ship short.
 
-STEP 5 — Report back. Send the playlist link plus a one-line note per pick:
-artist, album, and why it made the cut (source and score where relevant).
-Flag any album you could not find on Spotify.
+Then call the create-playlist tool. It takes a natural-language prompt, not
+track IDs, so make that prompt maximally explicit: a numbered list naming the
+artist, the album, and the exact track for every entry, ending with an
+instruction to include exactly those tracks and to add or substitute nothing.
+Anything vaguer gets you the engine's guess instead of your curation.
 
-STEP 6 — Write the picks back to memory. Append this week's artists and albums
-to the picks log, with the date. STEP 1 reads this next week — the anti-repeat
-check only works if every run records what it chose.
+Name the playlist exactly "«PLAYLIST_NAME_FORMAT»" using this week's date.
+
+STEP 5 — Verify what actually shipped. Spotify substitutes and drops tracks,
+so the playlist you asked for is not necessarily the playlist you got. Capture
+the ACTUAL tracklist — from the create call's response, or by reading the
+playlist back — and compare it against your intended picks.
+
+Adjust and rebuild if any of these hold:
+- fewer tracks than the lower bound of «LENGTH»
+- anything from HARD EXCLUSIONS got in
+- an over-familiar staple got in
+- the result badly misses the picks
+
+If you cannot retrieve the actual tracklist this run, mark the result
+UNVERIFIED and say so. Never assume it matched.
+
+STEP 6 — Report the actual playlist, not the intended one. Send the link, then
+one terse line per real track: artist, track, album, why it made the cut
+(source and score where relevant). Flag every substitution Spotify made, every
+album you could not find, and any short count. If the run is UNVERIFIED, lead
+with that.
+
+STEP 7 — Log what actually shipped. Append the verified tracklist to the picks
+log with the date — real artists, tracks and albums, not the intended picks.
+STEP 1 reads this next week, so logging intent instead of reality silently
+breaks the anti-repeat check. If the run is UNVERIFIED, log the intended picks
+and label them UNVERIFIED.
 ```
 
-Adjust STEP 5 to match your **`«APPROVAL»`** choice — if you picked "send the list, then build," move the report to before STEP 4 and have Claude wait.
+Adjust STEP 6 to match your **`«APPROVAL»`** choice — if you picked "send the list, then build," move the report to before STEP 4 and have Claude wait.
 
 ---
 
@@ -185,16 +218,19 @@ Before letting it run unattended, ask Claude to do one pass live. You'll find ou
 
 ## Known limitations
 
-**Spotify's playlist tool takes a natural-language description, not specific track IDs.** You name the artist and album; Spotify picks the song. So the *records* are hand-curated but the *cuts* are not fully under your control. Naming the album explicitly and describing the kind of track you want gets close. If a track choice is wrong, ask for a swap.
+**Spotify's playlist tool takes a natural-language description, not specific track IDs.** You name the artist, album and track; the engine still substitutes, drops, and can come up short. The playlist you asked for is not reliably the playlist you get — which is why STEP 5 verifies the result instead of trusting it, and STEP 7 logs what shipped rather than what was intended.
 
-**The connector may not be able to list playlists it already built.** An anti-repeat instruction phrased as "check my recent playlists" then has no tool to run on and silently does nothing — which is why STEP 6 keeps history in memory instead.
+**Verification depends on what the create call returns.** If your connector can't read a playlist back and the create response carries only a link, every run lands in the UNVERIFIED branch. Test that on one run before trusting the picks log.
+
+**The connector may not be able to list playlists it already built.** An anti-repeat instruction phrased as "check my recent playlists" then has no tool to run on and silently does nothing — which is why STEP 7 keeps history in memory instead.
 
 ---
 
 ## Tips
 
 - **Refine the spec conversationally.** Because it lives in memory (Step 2), "stop giving me so much ambient" in any chat carries into the next run — no need to edit the task.
-- **Make the anti-repeat check write, not just read.** Each run starts fresh, so one that reads prior picks but never records its own has nothing to compare against next week. That's the STEP 1 / STEP 6 pair.
+- **Never trust the build.** The gap between the picks you chose and the tracks that shipped is where this recipe fails quietly. STEP 5 exists to close it.
+- **Make the anti-repeat check write, not just read.** Each run starts fresh, so one that reads prior picks but never records its own has nothing to compare against next week. That's the STEP 1 / STEP 7 pair.
 - **Grade the first few weeks out loud.** "Track 4 was great, tracks 7 and 9 were noise" tunes the filter faster than any amount of upfront configuration.
 - **Watch for daylight saving.** Scheduled tasks run on a fixed UTC schedule, so a 7am task drifts to 6am (or 8am) when the clocks change. Ask Claude to shift it twice a year, or just live with the hour.
 - **Turn on push notifications** for the task so you know when the playlist is ready.
@@ -209,7 +245,7 @@ For reference, one filled-in configuration:
 - **New:** new to me, any age; a 1974 record counts if it surfaced this week in the press
 - **Structure:** new playlist each week
 - **Familiar artists:** include their new releases, don't filter them out
-- **Length:** 10–12 tracks (~45 min)
+- **Length:** 10–12 tracks (~45 min); 10 is a hard floor, not a target
 - **Per artist:** one each; two only if the record is genuinely strong
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
@@ -217,9 +253,10 @@ For reference, one filled-in configuration:
 - **Anchor artists:** The National, Big Thief, Fleet Foxes
 - **Timing:** Fridays 7am Central
 - **Name format:** `New Music — <Mon D, YYYY>` (e.g. `New Music — Sep 4, 2026`)
-- **Picks log:** appended to the same memory file the spec lives in, so STEP 6 has somewhere to write
+- **Picks log:** appended to the same memory file the spec lives in; records the tracks that actually shipped
 
 Two things it got wrong at first, both fixed in the prompt above:
 
-- **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 6.
+- **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 7.
 - **"Strongest atmospheric cut" on every record** made each week converge on one texture. Vary the ask per album.
+- **A canonical staple slipped in** — Pat Benatar, "Love Is a Battlefield". "New to me at any age" needs an explicit no-canon guard.

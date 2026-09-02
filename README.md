@@ -8,7 +8,7 @@ Each recipe is a self-contained markdown file: what it does, what you need, the 
 
 | Recipe | What it does |
 |---|---|
-| [Weekly music discovery playlist](recipes/weekly-music-discovery-playlist.md) | Scans music press every Friday and builds a Spotify playlist from the picks |
+| [Weekly music discovery playlist](recipes/weekly-music-discovery-playlist.md) | Scans music press every Friday, builds a Spotify playlist from the picks, and verifies what actually shipped |
 
 ## Repo layout
 
