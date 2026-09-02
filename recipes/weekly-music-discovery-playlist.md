@@ -34,12 +34,12 @@ Pick any combination:
 ### 2. What counts as "new"
 
 - **Released this week** — strictly fresh. Some weeks are thin.
-- **New to you, any age** — a 1974 record counts. Much better hit rate.
+- **New to you, any age** — an older record counts if it surfaced in the press. Much better hit rate.
 - **Mostly new, some catalog** — lead with the week's drops, backfill when the week is weak.
 
 > **`«NEW_DEFINITION»`** = _______________
 
-Whichever you pick, exclude canonical radio staples. "New to you at any age" is meant to surface overlooked records, not the classic-rock canon — without that guard, a discovery playlist will hand you Pat Benatar, "Love Is a Battlefield".
+Whichever you pick, exclude canonical radio staples. "New to you at any age" is meant to surface overlooked records, not the classic-rock canon — the test is radio ubiquity, not release date.
 
 ### 3. Playlist structure — not actually a choice
 
@@ -161,8 +161,8 @@ Taste: «YOUR_TASTE». Favorites include «FAVORITE_ARTISTS».
 "New" means: «NEW_DEFINITION». Do not pad with weak current releases just
 because they are current.
 Old records qualify only if they genuinely surfaced in this week's press.
-Exclude canonical radio staples regardless of age — the point is discovery,
-not the classic-rock canon. A staple that slipped through once: Pat Benatar, "Love Is a Battlefield".
+Exclude canonical radio staples regardless of age — the test is radio
+ubiquity, not release date.
 Tracks per artist: «PER_ARTIST».
 Artists already in rotation: «FAMILIAR_ARTISTS».
 HARD EXCLUSIONS: «EXCLUSIONS».
@@ -242,7 +242,7 @@ Before letting it run unattended, ask Claude to do one pass live. You'll find ou
 For reference, one filled-in configuration:
 
 - **Sources:** Pitchfork reviews — Best New Music and anything scored 8.0+ — plus indie music press
-- **New:** new to me, any age; a 1974 record counts if it surfaced this week in the press
+- **New:** new to me, any age, provided the record surfaced in this week's press
 - **Structure:** new playlist each week
 - **Familiar artists:** include their new releases, don't filter them out
 - **Length:** 10–12 tracks (~45 min); 10 is a hard floor, not a target
@@ -259,4 +259,4 @@ Two things it got wrong at first, both fixed in the prompt above:
 
 - **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 7.
 - **"Strongest atmospheric cut" on every record** made each week converge on one texture. Vary the ask per album.
-- **A canonical staple slipped in** — Pat Benatar, "Love Is a Battlefield". "New to me at any age" needs an explicit no-canon guard.
+- **A canonical staple slipped in.** "New to me at any age" needs an explicit no-canon guard.
