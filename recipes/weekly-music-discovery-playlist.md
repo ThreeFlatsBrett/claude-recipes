@@ -103,8 +103,9 @@ Build «YOUR_NAME»'s weekly new-music Spotify playlist. Run this end-to-end
 without asking anything — «YOUR_NAME» is not watching.
 
 STEP 1 — Read memory first. Check the stored music preferences file for taste
-and spec, and check the most recent prior playlists so you do not repeat
-artists or albums from the last 3-4 weeks.
+and spec, and read the running picks log so you do not repeat artists or
+albums from the last 3-4 weeks. If no picks log exists yet, proceed — you will
+create it in STEP 6.
 
 STEP 2 — Research (do this BEFORE touching any Spotify tool). Sources, in
 priority order:
@@ -137,6 +138,10 @@ explicitly in that prompt and specify what kind of track to pull from each
 STEP 5 — Report back. Send the playlist link plus a one-line note per pick:
 artist, album, and why it made the cut (source and score where relevant).
 Flag any album you could not find on Spotify.
+
+STEP 6 — Write the picks back to memory. Append this week's artists and albums
+to the picks log, with the date. STEP 1 reads this next week — the anti-repeat
+check only works if every run records what it chose.
 ```
 
 Adjust STEP 5 to match your **`«APPROVAL»`** choice — if you picked "send the list, then build," move the report to before STEP 4 and have Claude wait.
@@ -149,16 +154,18 @@ Before letting it run unattended, ask Claude to do one pass live. You'll find ou
 
 ---
 
-## Known limitation
+## Known limitations
 
 **Spotify's playlist tool takes a natural-language description, not specific track IDs.** You name the artist and album; Spotify picks the song. So the *records* are hand-curated but the *cuts* are not fully under your control. Naming the album explicitly and describing the kind of track you want gets close. If a track choice is wrong, ask for a swap.
+
+**Your connector may not be able to read back playlists it already built.** Check what the Spotify connector actually exposes — if there's no way to list existing playlists, an anti-repeat instruction phrased as "check my recent playlists" has no tool to run on and will quietly do nothing. That's why STEP 6 keeps the history in memory instead.
 
 ---
 
 ## Tips
 
 - **Store your spec in Claude's memory**, not just the task prompt. Then any Claude session knows your taste, and you can refine it conversationally ("stop giving me so much ambient") without editing the scheduled task.
-- **Ask for an anti-repeat check.** Without it you'll see the same well-reviewed record three weeks running.
+- **Make the anti-repeat check write, not just read.** Every run starts a fresh session, so a run that reads prior picks but never records its own has nothing to compare against next week — you'll see the same well-reviewed record three weeks running. That's the STEP 1 / STEP 6 pair.
 - **Grade the first few weeks out loud.** "Track 4 was great, tracks 7 and 9 were noise" tunes the filter faster than any amount of upfront configuration.
 - **Watch for daylight saving.** Scheduled tasks run on a fixed UTC schedule, so a 7am task drifts to 6am (or 8am) when the clocks change. Ask Claude to shift it twice a year, or just live with the hour.
 - **Turn on push notifications** for the task so you know when the playlist is ready.
