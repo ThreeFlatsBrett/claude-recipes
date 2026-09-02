@@ -120,13 +120,15 @@ No canonical radio staples, however old.
 - Sources: «SOURCES».
 - Name: "«PLAYLIST_NAME_FORMAT»", that Friday's date.
 
-## Picks log
-(One line per week: date, then artist — track — album for each track that actually
-shipped. The Friday task appends here. Entries marked UNVERIFIED are intended picks
-that could not be confirmed.)
+## Weekly playlist picks log (anti-repeat: do not reuse artists or albums from the last 3-4 weeks)
+(One dated subheading per week, then artist — track — album for every track that
+actually shipped. The Friday task appends here. Entries marked UNVERIFIED are
+intended picks that could not be confirmed.)
 ```
 
 Then ask Claude to read it back. If the path is wrong or the file is empty, STEP 1 of the task gets nothing and the anti-repeat check can't work — and it fails silently.
+
+Keep the anti-repeat rule inside the heading rather than trimming it. The constraint then travels with the data, so it's in context every time the log is read.
 
 ---
 
