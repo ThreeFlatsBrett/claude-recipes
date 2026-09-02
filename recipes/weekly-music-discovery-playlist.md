@@ -176,14 +176,21 @@ Before letting it run unattended, ask Claude to do one pass live. You'll find ou
 
 For reference, one filled-in configuration:
 
-- **Sources:** Pitchfork reviews + indie music press
-- **New:** new to me, any age
+- **Sources:** Pitchfork reviews — Best New Music and anything scored 8.0+ — plus indie music press
+- **New:** new to me, any age; a 1974 record counts if it surfaced this week in the press
 - **Structure:** new playlist each week
-- **Familiar artists:** include their new releases
-- **Length:** 10–12 tracks
-- **Per artist:** two if the record is strong
+- **Familiar artists:** include their new releases, don't filter them out
+- **Length:** 10–12 tracks (~45 min)
+- **Per artist:** one each; two only if the record is genuinely strong
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
 - **Taste:** indie rock, alternative, Americana; chill and atmospheric
+- **Anchor artists:** Temple of the Dog, Wilco, U2
 - **Timing:** Fridays 7am Central
-- **Name format:** `New Music — Sep 4, 2026`
+- **Name format:** `New Music — <Mon D, YYYY>` (e.g. `New Music — Sep 4, 2026`)
+- **Picks log:** appended to the same memory file the spec lives in, so STEP 6 has somewhere to write
+
+Two things this configuration got wrong at first, both now fixed in the prompt above:
+
+- **The anti-repeat check was a no-op.** STEP 1 read prior picks, but no step wrote them, so there was never anything to read. That's what STEP 6 is for.
+- **"Strongest atmospheric cut" was applied to every record.** It made each week converge on one texture. Vary the ask per album — the best song on a given record often isn't its most atmospheric one.
