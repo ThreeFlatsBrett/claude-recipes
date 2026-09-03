@@ -147,9 +147,9 @@ brand-new release from a staple artist is still fine.
 The allowlist overrides the genre list only; the no-canon rule still applies.
 
 ## Weekly playlist spec
-- «LENGTH». «PER_ARTIST».
+- «LENGTH». The lower bound is a hard floor. «PER_ARTIST».
 - "New" means: «NEW_DEFINITION».
-- Familiar artists: «FAMILIAR_ARTISTS».
+- Thin week: «THIN_WEEK».
 - Sources: «SOURCES».
 - Name: "«PLAYLIST_NAME_FORMAT»", that Friday's date.
 
