@@ -55,6 +55,8 @@ The connector can create playlists but not modify them, so a rolling list you re
 
 > **`«FAMILIAR_ARTISTS»`** = _______________
 
+If any of your anchor artists are themselves radio staples, this choice collides with the no-canon rule above — one says include them, the other says exclude them, and the prompt is left to guess. Resolve it explicitly. The usual resolution: a **brand-new release** from a staple artist is eligible, a well-worn **catalog cut** from that same artist is not.
+
 ### 5. Length
 
 - **10–12 tracks (~45 min)** — one sitting. Forces selectivity.
@@ -63,7 +65,15 @@ The connector can create playlists but not modify them, so a rolling list you re
 
 > **`«LENGTH»`** = _______________
 
-Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that.
+Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that. State the floor once and have the check refer to it. The prompt in Step 3 does this — STEP 5 says "fewer than the lower bound of «LENGTH»" rather than repeating the number — and it is worth keeping that way. Two copies of the same number drift, and a floor of 18 paired with a trigger of 10 is a verification step that passes the runs it exists to catch.
+
+Then decide what happens on a thin week, because "hard floor" and "don't pad with weak releases" will eventually conflict:
+
+- **Floor holds** — never ship short. Reach wider: more tracks from the strong records, older records that surfaced in the press, secondary sources.
+- **Quality holds** — ship short and flag the count. The floor is really a target.
+- **Lower the floor** — often the honest fix. A high floor combined with one-track-per-artist needs that many *distinct* artists clearing your exclusions every single week.
+
+> **`«THIN_WEEK»`** = _______________
 
 ### 6. Tracks per artist
 
@@ -71,6 +81,8 @@ Treat the lower bound as a hard floor, not a target. Spotify drops picks it can'
 - **Two if the record is strong** — signals which albums deserve a full listen.
 
 > **`«PER_ARTIST»`** = _______________
+
+This trades against your floor: one-each at a 20-track floor means finding 20 distinct artists a week. If you chose "floor holds" above, taking another track from a record that earns it is usually the cheapest way to reach the count.
 
 ### 7. Approval
 
@@ -85,6 +97,18 @@ Treat the lower bound as a hard floor, not a target. Spotify drops picks it can'
 List genres to hard-exclude. Common ones: hyperpop / harsh electronic, hip-hop, hardcore / metal / noise, pop country, jam bands, jazz fusion.
 
 > **`«EXCLUSIONS»`** = _______________
+
+Genre exclusions collide with your own favorites more often than you would expect — a pop-country exclusion can quietly disqualify an artist you actively love. Name the artists that always survive the exclusions. Start with every artist in your taste list, since those are the ones you would most hate to lose to a genre label.
+
+> **`«ALLOWLIST»`** = _______________
+
+Scope this deliberately: it should override the genre list, not the no-canon rule. Otherwise an allowlisted staple readmits its own greatest hits.
+
+Its mirror image is worth a slot too — the artist you are simply done with, who keeps clearing every other filter.
+
+> **`«NEVER_ARTISTS»`** = _______________
+
+All four artist lists — anchors, auto-include, allowlist, never — collect into a single block at the top of the Step 3 prompt. Fill them there once rather than threading names through the steps, or you will edit two of the three copies and wonder why last week's rule didn't take.
 
 ### Plus the basics
 
@@ -107,16 +131,25 @@ Save this to memory at «MEMORY_PATH», replacing whatever is there:
 # Music
 
 ## Taste
-«YOUR_TASTE». Anchor artists: «FAVORITE_ARTISTS».
+«YOUR_TASTE».
+
+## Artists
+- ANCHORS (define the taste): «FAVORITE_ARTISTS»
+- AUTO-INCLUDE (their new releases are always eligible): «FAMILIAR_ARTISTS»
+- ALLOWLIST (never blocked by the hard exclusions): «ALLOWLIST»
+- NEVER (permanently out, whatever the press says): «NEVER_ARTISTS»
+Any of these may read "same as anchors".
 
 ## Hard exclusions
 «EXCLUSIONS»
-No canonical radio staples, however old.
+No canonical radio staples from an artist's back catalog, however old. A
+brand-new release from a staple artist is still fine.
+The allowlist overrides the genre list only; the no-canon rule still applies.
 
 ## Weekly playlist spec
-- «LENGTH». «PER_ARTIST».
+- «LENGTH». The lower bound is a hard floor. «PER_ARTIST».
 - "New" means: «NEW_DEFINITION».
-- Familiar artists: «FAMILIAR_ARTISTS».
+- Thin week: «THIN_WEEK».
 - Sources: «SOURCES».
 - Name: "«PLAYLIST_NAME_FORMAT»", that Friday's date.
 
@@ -140,6 +173,15 @@ Ask Claude to create a scheduled task at **`«DAY_AND_TIME»`** with this as the
 Build «YOUR_NAME»'s weekly new-music Spotify playlist. Run this end-to-end
 without asking anything — «YOUR_NAME» is not watching.
 
+ARTISTS — the only place names appear. Edit here; the steps below refer back
+to this block instead of repeating names.
+  ANCHORS (define the taste): «FAVORITE_ARTISTS»
+  AUTO-INCLUDE (their new releases are always eligible): «FAMILIAR_ARTISTS»
+  ALLOWLIST (never blocked by HARD EXCLUSIONS): «ALLOWLIST»
+  NEVER (permanently out, whatever the press says): «NEVER_ARTISTS»
+Any of these may read "same as ANCHORS". If the memory file in STEP 1 carries
+a different list, memory wins — it is the one you can edit conversationally.
+
 STEP 1 — Read memory first. Check the stored music preferences file for taste
 and spec, and read the running picks log so you do not repeat artists or
 albums from the last 3-4 weeks. If no picks log exists yet, proceed — you will
@@ -159,15 +201,22 @@ Useful notes:
 - albumoftheyear.org/releases/ — what actually dropped this week
 
 STEP 3 — Curate «LENGTH». The lower bound is a hard floor, not a target.
-Taste: «YOUR_TASTE». Favorites include «FAVORITE_ARTISTS».
+Taste: «YOUR_TASTE». See ANCHORS above.
 "New" means: «NEW_DEFINITION». Do not pad with weak current releases just
 because they are current.
 Old records qualify only if they genuinely surfaced in this week's press.
-Exclude canonical radio staples regardless of age — the test is radio
-ubiquity, not release date.
+CANON RULE: exclude canonical radio staples from an artist's back catalog
+regardless of age — the test is radio ubiquity, not release date. A brand-new
+release from a staple artist is still eligible; a well-worn catalog cut from
+that same artist is not.
 Tracks per artist: «PER_ARTIST».
-Artists already in rotation: «FAMILIAR_ARTISTS».
-HARD EXCLUSIONS: «EXCLUSIONS».
+New releases from AUTO-INCLUDE artists are eligible — do not filter them out.
+If the week is thin and the floor is not reachable on the above: «THIN_WEEK».
+Name in STEP 6 which of those measures you had to use.
+HARD EXCLUSIONS: «EXCLUSIONS». ALLOWLIST artists are exempt from these. The
+exemption covers the genre list only — the CANON RULE still applies to them,
+so a new release is eligible and a well-worn catalog cut is not.
+Never include a NEVER artist, whatever the press says.
 
 STEP 4 — Build it. Use the Spotify search tool to confirm every pick exists on
 Spotify first. If a pick cannot be confirmed, replace it with another
@@ -188,9 +237,9 @@ playlist back — and compare it against your intended picks.
 
 Adjust and rebuild if any of these hold:
 - fewer tracks than the lower bound of «LENGTH»
-- anything from HARD EXCLUSIONS got in
-- an over-familiar staple got in
-- the result badly misses the picks
+- anything from HARD EXCLUSIONS got in that is not an ALLOWLIST artist
+- a back-catalog radio staple got in
+- fewer than 70% of your intended picks are present
 
 If you cannot retrieve the actual tracklist this run, mark the result
 UNVERIFIED and say so. Never assume it matched.
@@ -198,8 +247,8 @@ UNVERIFIED and say so. Never assume it matched.
 STEP 6 — Report the actual playlist, not the intended one. Send the link, then
 one terse line per real track: artist, track, album, why it made the cut
 (source and score where relevant). Flag every substitution Spotify made, every
-album you could not find, and any short count. If the run is UNVERIFIED, lead
-with that.
+album you could not find, any short count, and any thin-week measures from
+STEP 3 you had to use. If the run is UNVERIFIED, lead with that.
 
 STEP 7 — Log what actually shipped. Append the verified tracklist to the picks
 log with the date — real artists, tracks and albums, not the intended picks.
@@ -249,16 +298,20 @@ For reference, one filled-in configuration:
 - **Familiar artists:** include their new releases, don't filter them out
 - **Length:** 10–12 tracks (~45 min); 10 is a hard floor, not a target
 - **Per artist:** one each; two only if the record is genuinely strong
+- **Thin week:** floor holds — reach wider rather than ship short, taking extra tracks from the strong records first
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
+- **Allowlist:** every artist in the taste list, so a genre label can't disqualify one of them
+- **Never:** empty to start; the list earns entries after a few weeks, not before
 - **Taste:** indie rock, alternative, Americana; chill and atmospheric
 - **Anchor artists:** The National, Big Thief, Fleet Foxes
 - **Timing:** Fridays 7am Central
 - **Name format:** `New Music — <Mon D, YYYY>` (e.g. `New Music — Sep 4, 2026`)
 - **Picks log:** appended to the same memory file the spec lives in; records the tracks that actually shipped
 
-Two things it got wrong at first, both fixed in the prompt above:
+Four things it got wrong at first, all fixed in the prompt above:
 
 - **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 7.
 - **"Strongest atmospheric cut" on every record** made each week converge on one texture. Vary the ask per album.
 - **A canonical staple slipped in.** "New to me at any age" needs an explicit no-canon guard.
+- **The floor and the rebuild trigger drifted apart.** The length said 10 was the floor, but STEP 5's short-count check was left at a number from an earlier draft — so runs that missed the floor still passed verification. State the floor once and have the check refer to it.
