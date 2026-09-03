@@ -257,7 +257,7 @@ For reference, one filled-in configuration:
 - **Name format:** `New Music — <Mon D, YYYY>` (e.g. `New Music — Sep 4, 2026`)
 - **Picks log:** appended to the same memory file the spec lives in; records the tracks that actually shipped
 
-Two things it got wrong at first, both fixed in the prompt above:
+Three things it got wrong at first, all fixed in the prompt above:
 
 - **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 7.
 - **"Strongest atmospheric cut" on every record** made each week converge on one texture. Vary the ask per album.
