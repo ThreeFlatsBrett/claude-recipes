@@ -104,6 +104,12 @@ Genre exclusions collide with your own favorites more often than you would expec
 
 Scope this deliberately: it should override the genre list, not the no-canon rule. Otherwise an allowlisted staple readmits its own greatest hits.
 
+Its mirror image is worth a slot too — the artist you are simply done with, who keeps clearing every other filter.
+
+> **`«NEVER_ARTISTS»`** = _______________
+
+All four artist lists — anchors, auto-include, allowlist, never — collect into a single block at the top of the Step 3 prompt. Fill them there once rather than threading names through the steps, or you will edit two of the three copies and wonder why last week's rule didn't take.
+
 ### Plus the basics
 
 > **`«YOUR_NAME»`** = _______________
@@ -125,16 +131,20 @@ Save this to memory at «MEMORY_PATH», replacing whatever is there:
 # Music
 
 ## Taste
-«YOUR_TASTE». Anchor artists: «FAVORITE_ARTISTS».
+«YOUR_TASTE».
+
+## Artists
+- ANCHORS (define the taste): «FAVORITE_ARTISTS»
+- AUTO-INCLUDE (their new releases are always eligible): «FAMILIAR_ARTISTS»
+- ALLOWLIST (never blocked by the hard exclusions): «ALLOWLIST»
+- NEVER (permanently out, whatever the press says): «NEVER_ARTISTS»
+Any of these may read "same as anchors".
 
 ## Hard exclusions
 «EXCLUSIONS»
 No canonical radio staples from an artist's back catalog, however old. A
 brand-new release from a staple artist is still fine.
-
-## Always allowed
-«ALLOWLIST» — never blocked by the hard exclusions above. Overrides the genre
-list only; the no-canon rule still applies to them.
+The allowlist overrides the genre list only; the no-canon rule still applies.
 
 ## Weekly playlist spec
 - «LENGTH». «PER_ARTIST».
@@ -163,6 +173,15 @@ Ask Claude to create a scheduled task at **`«DAY_AND_TIME»`** with this as the
 Build «YOUR_NAME»'s weekly new-music Spotify playlist. Run this end-to-end
 without asking anything — «YOUR_NAME» is not watching.
 
+ARTISTS — the only place names appear. Edit here; the steps below refer back
+to this block instead of repeating names.
+  ANCHORS (define the taste): «FAVORITE_ARTISTS»
+  AUTO-INCLUDE (their new releases are always eligible): «FAMILIAR_ARTISTS»
+  ALLOWLIST (never blocked by HARD EXCLUSIONS): «ALLOWLIST»
+  NEVER (permanently out, whatever the press says): «NEVER_ARTISTS»
+Any of these may read "same as ANCHORS". If the memory file in STEP 1 carries
+a different list, memory wins — it is the one you can edit conversationally.
+
 STEP 1 — Read memory first. Check the stored music preferences file for taste
 and spec, and read the running picks log so you do not repeat artists or
 albums from the last 3-4 weeks. If no picks log exists yet, proceed — you will
@@ -182,7 +201,7 @@ Useful notes:
 - albumoftheyear.org/releases/ — what actually dropped this week
 
 STEP 3 — Curate «LENGTH». The lower bound is a hard floor, not a target.
-Taste: «YOUR_TASTE». Favorites include «FAVORITE_ARTISTS».
+Taste: «YOUR_TASTE». See ANCHORS above.
 "New" means: «NEW_DEFINITION». Do not pad with weak current releases just
 because they are current.
 Old records qualify only if they genuinely surfaced in this week's press.
@@ -191,13 +210,13 @@ regardless of age — the test is radio ubiquity, not release date. A brand-new
 release from a staple artist is still eligible; a well-worn catalog cut from
 that same artist is not.
 Tracks per artist: «PER_ARTIST».
-Artists already in rotation: «FAMILIAR_ARTISTS».
+New releases from AUTO-INCLUDE artists are eligible — do not filter them out.
 If the week is thin and the floor is not reachable on the above: «THIN_WEEK».
 Name in STEP 6 which of those measures you had to use.
-HARD EXCLUSIONS: «EXCLUSIONS».
-ALWAYS ALLOWED: «ALLOWLIST». These artists are never blocked by the hard
-exclusions. This overrides the genre list only — the CANON RULE still applies
-to them, so a new release is eligible and a well-worn catalog cut is not.
+HARD EXCLUSIONS: «EXCLUSIONS». ALLOWLIST artists are exempt from these. The
+exemption covers the genre list only — the CANON RULE still applies to them,
+so a new release is eligible and a well-worn catalog cut is not.
+Never include a NEVER artist, whatever the press says.
 
 STEP 4 — Build it. Use the Spotify search tool to confirm every pick exists on
 Spotify first. If a pick cannot be confirmed, replace it with another
@@ -218,7 +237,7 @@ playlist back — and compare it against your intended picks.
 
 Adjust and rebuild if any of these hold:
 - fewer tracks than the lower bound of «LENGTH»
-- anything from HARD EXCLUSIONS got in
+- anything from HARD EXCLUSIONS got in that is not an ALLOWLIST artist
 - a back-catalog radio staple got in
 - fewer than 70% of your intended picks are present
 
@@ -228,8 +247,8 @@ UNVERIFIED and say so. Never assume it matched.
 STEP 6 — Report the actual playlist, not the intended one. Send the link, then
 one terse line per real track: artist, track, album, why it made the cut
 (source and score where relevant). Flag every substitution Spotify made, every
-album you could not find, and any short count. If the run is UNVERIFIED, lead
-with that.
+album you could not find, any short count, and any thin-week measures from
+STEP 3 you had to use. If the run is UNVERIFIED, lead with that.
 
 STEP 7 — Log what actually shipped. Append the verified tracklist to the picks
 log with the date — real artists, tracks and albums, not the intended picks.
@@ -283,6 +302,7 @@ For reference, one filled-in configuration:
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
 - **Allowlist:** every artist in the taste list, so a genre label can't disqualify one of them
+- **Never:** empty to start; the list earns entries after a few weeks, not before
 - **Taste:** indie rock, alternative, Americana; chill and atmospheric
 - **Anchor artists:** The National, Big Thief, Fleet Foxes
 - **Timing:** Fridays 7am Central
