@@ -65,7 +65,7 @@ If any of your anchor artists are themselves radio staples, this choice collides
 
 > **`«LENGTH»`** = _______________
 
-Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that. Whatever floor you pick, make sure STEP 5's short-count trigger uses the same number. A floor of 18 paired with a trigger of 10 is a verification step that passes the runs it exists to catch.
+Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that. State the floor once and have the check refer to it. The prompt in Step 3 does this — STEP 5 says "fewer than the lower bound of «LENGTH»" rather than repeating the number — and it is worth keeping that way. Two copies of the same number drift, and a floor of 18 paired with a trigger of 10 is a verification step that passes the runs it exists to catch.
 
 Then decide what happens on a thin week, because "hard floor" and "don't pad with weak releases" will eventually conflict:
 
@@ -98,6 +98,12 @@ List genres to hard-exclude. Common ones: hyperpop / harsh electronic, hip-hop, 
 
 > **`«EXCLUSIONS»`** = _______________
 
+Genre exclusions collide with your own favorites more often than you would expect — a pop-country exclusion can quietly disqualify an artist you actively love. Name the artists that always survive the exclusions. Start with every artist in your taste list, since those are the ones you would most hate to lose to a genre label.
+
+> **`«ALLOWLIST»`** = _______________
+
+Scope this deliberately: it should override the genre list, not the no-canon rule. Otherwise an allowlisted staple readmits its own greatest hits.
+
 ### Plus the basics
 
 > **`«YOUR_NAME»`** = _______________
@@ -123,7 +129,12 @@ Save this to memory at «MEMORY_PATH», replacing whatever is there:
 
 ## Hard exclusions
 «EXCLUSIONS»
-No canonical radio staples, however old.
+No canonical radio staples from an artist's back catalog, however old. A
+brand-new release from a staple artist is still fine.
+
+## Always allowed
+«ALLOWLIST» — never blocked by the hard exclusions above. Overrides the genre
+list only; the no-canon rule still applies to them.
 
 ## Weekly playlist spec
 - «LENGTH». «PER_ARTIST».
@@ -184,6 +195,9 @@ Artists already in rotation: «FAMILIAR_ARTISTS».
 If the week is thin and the floor is not reachable on the above: «THIN_WEEK».
 Name in STEP 6 which of those measures you had to use.
 HARD EXCLUSIONS: «EXCLUSIONS».
+ALWAYS ALLOWED: «ALLOWLIST». These artists are never blocked by the hard
+exclusions. This overrides the genre list only — the CANON RULE still applies
+to them, so a new release is eligible and a well-worn catalog cut is not.
 
 STEP 4 — Build it. Use the Spotify search tool to confirm every pick exists on
 Spotify first. If a pick cannot be confirmed, replace it with another
@@ -268,6 +282,7 @@ For reference, one filled-in configuration:
 - **Thin week:** floor holds — reach wider rather than ship short, taking extra tracks from the strong records first
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
+- **Allowlist:** every artist in the taste list, so a genre label can't disqualify one of them
 - **Taste:** indie rock, alternative, Americana; chill and atmospheric
 - **Anchor artists:** The National, Big Thief, Fleet Foxes
 - **Timing:** Fridays 7am Central
@@ -279,4 +294,4 @@ Four things it got wrong at first, all fixed in the prompt above:
 - **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 7.
 - **"Strongest atmospheric cut" on every record** made each week converge on one texture. Vary the ask per album.
 - **A canonical staple slipped in.** "New to me at any age" needs an explicit no-canon guard.
-- **The floor and the rebuild trigger drifted apart.** The length said 10 was the floor, but STEP 5's short-count check was left at a number from an earlier draft — so runs that missed the floor still passed verification. Keep the two numbers tied.
+- **The floor and the rebuild trigger drifted apart.** The length said 10 was the floor, but STEP 5's short-count check was left at a number from an earlier draft — so runs that missed the floor still passed verification. State the floor once and have the check refer to it.
