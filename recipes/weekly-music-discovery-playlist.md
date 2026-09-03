@@ -55,6 +55,8 @@ The connector can create playlists but not modify them, so a rolling list you re
 
 > **`«FAMILIAR_ARTISTS»`** = _______________
 
+If any of your anchor artists are themselves radio staples, this choice collides with the no-canon rule above — one says include them, the other says exclude them, and the prompt is left to guess. Resolve it explicitly. The usual resolution: a **brand-new release** from a staple artist is eligible, a well-worn **catalog cut** from that same artist is not.
+
 ### 5. Length
 
 - **10–12 tracks (~45 min)** — one sitting. Forces selectivity.
@@ -63,7 +65,15 @@ The connector can create playlists but not modify them, so a rolling list you re
 
 > **`«LENGTH»`** = _______________
 
-Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that.
+Treat the lower bound as a hard floor, not a target. Spotify drops picks it can't match, so a 10-track intent can ship as 7 — STEP 5 checks for exactly that. Whatever floor you pick, make sure STEP 5's short-count trigger uses the same number. A floor of 18 paired with a trigger of 10 is a verification step that passes the runs it exists to catch.
+
+Then decide what happens on a thin week, because "hard floor" and "don't pad with weak releases" will eventually conflict:
+
+- **Floor holds** — never ship short. Reach wider: more tracks from the strong records, older records that surfaced in the press, secondary sources.
+- **Quality holds** — ship short and flag the count. The floor is really a target.
+- **Lower the floor** — often the honest fix. A high floor combined with one-track-per-artist needs that many *distinct* artists clearing your exclusions every single week.
+
+> **`«THIN_WEEK»`** = _______________
 
 ### 6. Tracks per artist
 
@@ -71,6 +81,8 @@ Treat the lower bound as a hard floor, not a target. Spotify drops picks it can'
 - **Two if the record is strong** — signals which albums deserve a full listen.
 
 > **`«PER_ARTIST»`** = _______________
+
+This trades against your floor: one-each at a 20-track floor means finding 20 distinct artists a week. If you chose "floor holds" above, taking another track from a record that earns it is usually the cheapest way to reach the count.
 
 ### 7. Approval
 
@@ -163,10 +175,14 @@ Taste: «YOUR_TASTE». Favorites include «FAVORITE_ARTISTS».
 "New" means: «NEW_DEFINITION». Do not pad with weak current releases just
 because they are current.
 Old records qualify only if they genuinely surfaced in this week's press.
-Exclude canonical radio staples regardless of age — the test is radio
-ubiquity, not release date.
+CANON RULE: exclude canonical radio staples from an artist's back catalog
+regardless of age — the test is radio ubiquity, not release date. A brand-new
+release from a staple artist is still eligible; a well-worn catalog cut from
+that same artist is not.
 Tracks per artist: «PER_ARTIST».
 Artists already in rotation: «FAMILIAR_ARTISTS».
+If the week is thin and the floor is not reachable on the above: «THIN_WEEK».
+Name in STEP 6 which of those measures you had to use.
 HARD EXCLUSIONS: «EXCLUSIONS».
 
 STEP 4 — Build it. Use the Spotify search tool to confirm every pick exists on
@@ -189,8 +205,8 @@ playlist back — and compare it against your intended picks.
 Adjust and rebuild if any of these hold:
 - fewer tracks than the lower bound of «LENGTH»
 - anything from HARD EXCLUSIONS got in
-- an over-familiar staple got in
-- the result badly misses the picks
+- a back-catalog radio staple got in
+- fewer than 70% of your intended picks are present
 
 If you cannot retrieve the actual tracklist this run, mark the result
 UNVERIFIED and say so. Never assume it matched.
@@ -249,6 +265,7 @@ For reference, one filled-in configuration:
 - **Familiar artists:** include their new releases, don't filter them out
 - **Length:** 10–12 tracks (~45 min); 10 is a hard floor, not a target
 - **Per artist:** one each; two only if the record is genuinely strong
+- **Thin week:** floor holds — reach wider rather than ship short, taking extra tracks from the strong records first
 - **Approval:** just build it
 - **Exclusions:** hyperpop/harsh electronic, hip-hop, hardcore/metal/noise, pop country
 - **Taste:** indie rock, alternative, Americana; chill and atmospheric
@@ -257,8 +274,9 @@ For reference, one filled-in configuration:
 - **Name format:** `New Music — <Mon D, YYYY>` (e.g. `New Music — Sep 4, 2026`)
 - **Picks log:** appended to the same memory file the spec lives in; records the tracks that actually shipped
 
-Three things it got wrong at first, all fixed in the prompt above:
+Four things it got wrong at first, all fixed in the prompt above:
 
 - **The anti-repeat check was a no-op** — STEP 1 read prior picks, but nothing wrote them. Hence STEP 7.
 - **"Strongest atmospheric cut" on every record** made each week converge on one texture. Vary the ask per album.
 - **A canonical staple slipped in.** "New to me at any age" needs an explicit no-canon guard.
+- **The floor and the rebuild trigger drifted apart.** The length said 10 was the floor, but STEP 5's short-count check was left at a number from an earlier draft — so runs that missed the floor still passed verification. Keep the two numbers tied.
